@@ -19,7 +19,8 @@ public class Cliente extends Thread {
     public Cliente(String direccionIP, int puerto) {
         this.direccionIP = direccionIP;
         this.puerto = puerto;
-        this.stock = 0;
+        this.stock=0;
+        
 
     }
 
@@ -44,21 +45,25 @@ public class Cliente extends Thread {
             //Creamos un socket seguro para establecer la conexion con el servidor
             SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             SSLSocket socket = (SSLSocket) socketFactory.createSocket(direccionIP, puerto);
-            boolean conectado=true;
+            boolean conectado = true;
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
-            while (conectado==true) {
-                if (botonPulsado == 1) {
-                    solicitudConsultarStock();
-                    botonPulsado=0;
-                }
-                else if(botonPulsado==2){
+            
+            while (conectado == true) {
+
+                switch (botonPulsado) {
+                    case 1:
+                        solicitudConsultarStock();
+                        botonPulsado=0;
+                        break;
+                    case 2:
                         solicitudAumentarStock();
                         botonPulsado=0;
-                        }
-                else if(botonPulsado==3) {
-                    solicitudDisminuirStock();
-                    botonPulsado=0;
+                        break;
+                    case 3: 
+                        solicitudDisminuirStock();
+                        botonPulsado=0;
+                        break;
                 }
             }
         } catch (Exception exception) {
@@ -67,23 +72,30 @@ public class Cliente extends Thread {
 
     }
 
-    public void solicitudAumentarStock() throws IOException {
+    public void solicitudAumentarStock() throws IOException, InterruptedException {
+        
+        out.writeInt(cantidad);  
+        stock = in.readInt();
+    }
+
+    public void solicitudDisminuirStock() throws IOException, InterruptedException {
+        
         out.writeInt(cantidad);
         stock = in.readInt();
     }
 
-    public void solicitudDisminuirStock() throws IOException {
-        out.writeInt(-cantidad);
-        stock = in.readInt();
-    }
-
-    public void solicitudConsultarStock() throws IOException {
+    public void solicitudConsultarStock() throws IOException, InterruptedException {
+        
         out.writeInt(0);
         stock = in.readInt();
     }
 
     public int getStock() {
         return stock;
+    }
+
+    public void actualizarStock(int nuevoStock) {
+        stock = nuevoStock;
     }
 
 }

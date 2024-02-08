@@ -54,7 +54,7 @@ public class FXMLDocumentController implements Initializable {
                 try {
                     cliente = new Cliente(txtIP.getText(), Integer.parseInt(txtPuerto.getText()));
                     cliente.start();
-                    txtArea.appendText("Conexión establecida con el servidor");
+                    txtArea.appendText("\nConexión establecida con el servidor");
 
                 } catch (Exception exception) {
 
@@ -67,9 +67,14 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void consultarStock2(ActionEvent event) {
+        boolean esperar=true;
         try {
             cliente.setBotonPulsado(1);
-            txtArea.appendText("El stock actual es: " + cliente.getStock());
+  
+                Thread.sleep(100); 
+                esperar=false;
+            
+            txtArea.appendText("\nEl stock actual es: " + cliente.getStock());
 
         } catch (Exception ex) {
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,11 +83,13 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void aumentarStock2(ActionEvent event) {
-
+        int cantidadAumentar = Integer.parseInt(txtAumentarStock.getText());
+        boolean esperar=true;
         try {
-            cliente.setBotonPulsado(2);
-            int cantidadAumentar = Integer.parseInt(txtAumentarStock.getText());
             cliente.setCantidad(cantidadAumentar);
+            cliente.setBotonPulsado(2);
+            
+            txtArea.appendText("\nStock aumentado correctamente");
         } catch (Exception ex) {
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -90,10 +97,18 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void disminuirStock2(ActionEvent event) {
-        cliente.setBotonPulsado(3);
+
         int cantidadDisminuir = Integer.parseInt(txtDisminuirStock.getText());
+        boolean esperar=true;
         try {
-            cliente.setCantidad(cantidadDisminuir);
+            cliente.setCantidad(-cantidadDisminuir);
+            cliente.setBotonPulsado(3);
+            while (esperar) {
+               
+                Thread.sleep(100); // Espera 100 milisegundos antes de volver a verificar
+                esperar=false;
+            }
+            txtArea.appendText("\nStock reducido correctamente");
         } catch (Exception ex) {
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
         }
